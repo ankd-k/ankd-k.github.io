@@ -1,7 +1,6 @@
-@charset "UTF-8";
 @font-face {
   font-family: 'MyFont';
-  src: url("./assets/font/agency-fb.ttf") format("ttf"), url("./assets/font/幻ノにじみ明朝.otf") format("otf"); }
+  src: url("../assets/font/agency-fb.ttf"); }
 
 html, body {
   height: 100%; }
@@ -13,7 +12,7 @@ body {
   body section {
     height: 100%; }
 
-.top-visual {
+.top_visual {
   height: 100%;
   z-index: 1;
   display: flex;
@@ -28,12 +27,12 @@ body {
     padding: 12px;
     color: white;
     background-color: black; }
+  .contents h1, .contents h2 {
+    margin: 10px;
+    padding: 10px;
+    border-bottom: 1px solid white; }
   .contents .about {
     width: 50%; }
-    .contents .about h2 {
-      margin: 10px;
-      padding: 10px;
-      border-bottom: 1px solid white; }
     .contents .about p {
       margin: 10px;
       padding: 10px; }

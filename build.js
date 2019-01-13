@@ -86,10 +86,42 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./dev/canvas.ts":
-/*!***********************!*\
-  !*** ./dev/canvas.ts ***!
-  \***********************/
+/***/ "./dev/css/style.scss":
+/*!****************************!*\
+  !*** ./dev/css/style.scss ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "./dev/main.ts":
+/*!*********************!*\
+  !*** ./dev/main.ts ***!
+  \*********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _css_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./css/style.scss */ "./dev/css/style.scss");
+/* harmony import */ var _css_style_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_style_scss__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ts_canvas_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ts/canvas.ts */ "./dev/ts/canvas.ts");
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap';
+
+//
+
+
+
+/***/ }),
+
+/***/ "./dev/ts/canvas.ts":
+/*!**************************!*\
+  !*** ./dev/ts/canvas.ts ***!
+  \**************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -104,27 +136,45 @@ function init() {
         canvas: document.querySelector(".canvas_background"),
         antialias: true
     });
+    // create Scene
     var scene = new three__WEBPACK_IMPORTED_MODULE_0__["Scene"]();
     // create camera
-    var camera = new three__WEBPACK_IMPORTED_MODULE_0__["PerspectiveCamera"](45, 1.0);
+    var camera = new three__WEBPACK_IMPORTED_MODULE_0__["PerspectiveCamera"](30, 1.0);
     camera.position.set(0, 0, +1000);
-    // create material
-    var material = new three__WEBPACK_IMPORTED_MODULE_0__["MeshBasicMaterial"]({
-    // color: 0xFFFFFF,
-    // roughness: 1.0
+    // add Light
+    var directionalLight = new three__WEBPACK_IMPORTED_MODULE_0__["DirectionalLight"](0xFFFFFF);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+    // add top_visual to scene
+    var fontLoader = new three__WEBPACK_IMPORTED_MODULE_0__["FontLoader"]();
+    fontLoader.load('./assets/font/AgencyFB_Regular.json', function (font) {
+        var topVisualGeometry = new three__WEBPACK_IMPORTED_MODULE_0__["TextGeometry"]('Kohei Nakada', {
+            font: font,
+            size: 60,
+            height: 2,
+            curveSegments: 2
+        });
+        topVisualGeometry.center();
+        var topVisualMaterial = new three__WEBPACK_IMPORTED_MODULE_0__["MeshBasicMaterial"]();
+        var topVisualMesh = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](topVisualGeometry, topVisualMaterial);
+        scene.add(topVisualMesh);
+    });
+    // add text objs to scene
+    var textMaterial = new three__WEBPACK_IMPORTED_MODULE_0__["MeshStandardMaterial"]({
+        color: 0xFFFFFF,
+        roughness: 0.0
     });
     var texts = [];
-    var fontLoader = new three__WEBPACK_IMPORTED_MODULE_0__["FontLoader"]();
     var _loop_1 = function (i) {
         fontLoader.load('./assets/font/AgencyFB_Regular.json', function (font) {
             var textGeometry = new three__WEBPACK_IMPORTED_MODULE_0__["TextGeometry"](String(i), {
                 font: font,
                 size: 60,
-                height: 20,
-                curveSegments: 12
+                height: 2,
+                curveSegments: 2
             });
             textGeometry.center();
-            var textMesh = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](textGeometry, material);
+            var textMesh = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](textGeometry, textMaterial);
             textMesh.position.x = 1000.0 * (Math.random() * 2.0 - 1.0);
             textMesh.position.y = 1000.0 * (Math.random() * 2.0 - 1.0);
             textMesh.position.z = 1000.0 * (Math.random() * 2.0 - 1.0);
@@ -135,16 +185,14 @@ function init() {
     for (var i = 0; i < 50; i++) {
         _loop_1(i);
     }
-    var directionalLight = new three__WEBPACK_IMPORTED_MODULE_0__["DirectionalLight"](0xFFFFFF);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
     animate();
     // 毎フレーム時に実行されるループイベントです
     function animate() {
         // レンダリング
         requestAnimationFrame(animate);
-        // ミリ秒から秒に変換
-        var sec = performance.now() / 1000.0;
+        // get second
+        // const sec = performance.now() / 1000.0;
+        // process
         for (var i in texts) {
             // console.log(i);
             texts[i].position.y += 2.0; //500.0 * Math.sin(sec+i);
@@ -170,38 +218,6 @@ function init() {
     }
 }
 
-
-/***/ }),
-
-/***/ "./dev/main.ts":
-/*!*********************!*\
-  !*** ./dev/main.ts ***!
-  \*********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./dev/style.scss");
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_style_scss__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _canvas_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas.ts */ "./dev/canvas.ts");
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap';
-
-//
-
-
-
-/***/ }),
-
-/***/ "./dev/style.scss":
-/*!************************!*\
-  !*** ./dev/style.scss ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// extracted by mini-css-extract-plugin
 
 /***/ }),
 
