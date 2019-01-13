@@ -1,0 +1,66 @@
+@charset "UTF-8";
+@font-face {
+  font-family: 'MyFont';
+  src: url("./assets/font/agency-fb.ttf") format("ttf"), url("./assets/font/幻ノにじみ明朝.otf") format("otf"); }
+
+html, body {
+  height: 100%; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'MyFont'; }
+  body section {
+    height: 100%; }
+
+.top-visual {
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: red; }
+
+.contents {
+  z-index: 1; }
+  .contents div {
+    margin: 12px;
+    padding: 12px;
+    color: white;
+    background-color: black; }
+  .contents .about {
+    width: 50%; }
+    .contents .about h2 {
+      margin: 10px;
+      padding: 10px;
+      border-bottom: 1px solid white; }
+    .contents .about p {
+      margin: 10px;
+      padding: 10px; }
+    .contents .about .skill {
+      margin: 10px;
+      padding: 10px; }
+      .contents .about .skill h3 {
+        margin: 8px;
+        padding: 8px;
+        border-bottom: 1px solid white; }
+  .contents .work {
+    width: 50%; }
+  .contents .contact {
+    width: 50%; }
+
+.canvas_background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+  transition-property: opacity;
+  transition-duration: 1s;
+  opacity: 0;
+  visibility: hidden; }
+  .canvas_background.isShow {
+    opacity: 1;
+    visibility: visible; }
+
+
+/*# sourceMappingURL=style.css.map*/
