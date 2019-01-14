@@ -109,10 +109,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _css_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./css/style.scss */ "./dev/css/style.scss");
 /* harmony import */ var _css_style_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_style_scss__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ts_canvas_ts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ts/canvas.ts */ "./dev/ts/canvas.ts");
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap';
 
-//
 
 
 
@@ -129,6 +126,25 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "./node_modules/three/build/three.module.js");
 
+// dev/shaders/fs/basic.frag
+// import vs from '../shaders/vs/basic.vert';
+// import fs from '../shaders/fs/basic.frag';
+// import fs from 'raw-loader!../basic.frag';
+// console.log('txt:' + require('raw-loader!./file.txt'));
+// console.log('vs:¥n'+vs);
+// console.log('fs:¥n'+fs);
+// import 'three-examples/shaders/CopyShader.js';
+// import 'three-examples/postprocessing/EffectComposer.js';
+// import 'three-examples/postprocessing/RenderPass.js';
+// import 'three-examples/postprocessing/ShaderPass.js';
+// import 'three-examples/postprocessing/MaskPass.js';
+//
+// import 'three-examples/shaders/DotScreenShader.js';
+// import 'three-examples/shaders/RGBShiftShader.js';
+// import 'three-examples/shaders/DigitalGlitch.js';
+// import 'three-examples/postprocessing/GlitchPass.js';
+var vs = "\n  precision highp float;\n\n  attribute vec3 position;\n  attribute vec2 uv;\n\n  varying vec2 vUv;\n\n  void main() {\n    vUv = uv;\n    gl_Position = vec4(position, 1.0);\n  }\n";
+var fs = "\nprecision mediump float;\n\nuniform vec2 resolution;\nuniform float time;\n\nconst float PI = 3.14159265359;\n\nfloat usin(float x){\n  return 0.5+0.5*sin(x);\n}\n\nfloat plot(vec2 p, float pct, float w){\n  return smoothstep(pct-w, pct, p.y)-smoothstep(pct, pct+w, p.y);\n}\n\nvoid main(){\n  float t = mod(time, 60.);\n  vec2 uv = gl_FragCoord.xy/resolution;\n  vec2 p = (gl_FragCoord.xy*2.-resolution)/min(resolution.x, resolution.y);\n  vec3 color = vec3(0.);\n\n  p *= 2.;\n\n  for(int i=0;i<10;i++){\n    float fi = float(i);\n    vec2 pp = p;\n    p.x = pp.x+sin(2.456*pp.y+5.13489 + time*0.1518 + sin(pp.x*0.82891 + time * 0.4358));\n    p.y = pp.y+sin(1.59756*pp.x+0.093489 + time*0.31 + sin(pp.y*1.35671 + time * 0.315));\n    color += plot(p, usin(usin(p.x*fi*2.3447+t*0.21)), usin(t)*0.3+0.5) * vec3(usin(time*0.81598)*0.3+0.2, usin(time*0.349741)*0.8+0.4, usin(time*0.7415957)*0.8+0.8);\n  }\n\n  gl_FragColor = vec4(color, 1.);\n}\n";
 window.addEventListener('DOMContentLoaded', init);
 function init() {
     // create renderer
@@ -138,6 +154,21 @@ function init() {
     });
     // create Scene
     var scene = new three__WEBPACK_IMPORTED_MODULE_0__["Scene"]();
+    // background shader
+    var bgGeometry = new three__WEBPACK_IMPORTED_MODULE_0__["PlaneBufferGeometry"](2.0, 2.0);
+    var bgMaterial = new three__WEBPACK_IMPORTED_MODULE_0__["RawShaderMaterial"]({
+        uniforms: {
+            resolution: { value: new three__WEBPACK_IMPORTED_MODULE_0__["Vector2"](window.innerWidth, window.innerHeight) },
+            time: { value: 0.0 }
+        },
+        vertexShader: vs,
+        fragmentShader: fs,
+        depthTest: false,
+    });
+    var background = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](bgGeometry, bgMaterial);
+    console.log(typeof background.material);
+    background.renderOrder = -1;
+    scene.add(background);
     // create camera
     var camera = new three__WEBPACK_IMPORTED_MODULE_0__["PerspectiveCamera"](30, 1.0);
     camera.position.set(0, 0, +1000);
@@ -162,14 +193,15 @@ function init() {
     // add text objs to scene
     var textMaterial = new three__WEBPACK_IMPORTED_MODULE_0__["MeshStandardMaterial"]({
         color: 0xFFFFFF,
-        roughness: 0.0
+        roughness: 0.8
     });
-    var texts = [];
-    var _loop_1 = function (i) {
+    var strs = fs.split('\n');
+    var textObjs = [];
+    for (var i = 0; i < 150; i++) {
         fontLoader.load('./assets/font/AgencyFB_Regular.json', function (font) {
-            var textGeometry = new three__WEBPACK_IMPORTED_MODULE_0__["TextGeometry"](String(i), {
+            var textGeometry = new three__WEBPACK_IMPORTED_MODULE_0__["TextGeometry"](strs[Math.floor(Math.random() * strs.length)], {
                 font: font,
-                size: 60,
+                size: 24,
                 height: 2,
                 curveSegments: 2
             });
@@ -179,29 +211,47 @@ function init() {
             textMesh.position.y = 1000.0 * (Math.random() * 2.0 - 1.0);
             textMesh.position.z = 1000.0 * (Math.random() * 2.0 - 1.0);
             scene.add(textMesh);
-            texts.push(textMesh);
+            textObjs.push(textMesh);
         });
-    };
-    for (var i = 0; i < 50; i++) {
-        _loop_1(i);
     }
+    // post processing
+    // render scene
+    // var composer = new THREE.EffectComposer(renderer);
+    // composer.renderToScreen = true;
+    // composer.addPass( new THREE.RenderPass(scene, camera));
+    // // effect DotScreen
+    // var effect = new THREE.ShaderPass( THREE.DotScreenShader );
+    // effect.uniforms['scale'].value = 4;
+    // effect.renderToScreen = true;
+    // composer.addPass(effect);
+    // effect Glitch
+    // var glitchPass = new THREE.GlitchPass();
+    // glitchPass.renderToScreen(true);
+    // composer.addPass(glitchPass);
+    // effect = new THREE.ShaderPass( THREE.RGBShiftShader );
+    // effect.uniforms[ 'amount' ].value = 0.0015;
+    // composer.addPass(effect);
     animate();
     // 毎フレーム時に実行されるループイベントです
     function animate() {
         // レンダリング
         requestAnimationFrame(animate);
-        // get second
-        // const sec = performance.now() / 1000.0;
+        //get second
+        var sec = performance.now() / 1000.0;
+        // update background
+        // console.log(background.material);
+        bgMaterial.uniforms.time.value = sec;
         // process
-        for (var i in texts) {
+        for (var i in textObjs) {
             // console.log(i);
-            texts[i].position.y += 2.0; //500.0 * Math.sin(sec+i);
-            if (1000.0 < texts[i].position.y) {
-                texts[i].position.x = 1000.0 * (Math.random() * 2.0 - 1.0);
-                texts[i].position.y = -1000.0;
-                texts[i].position.z = 1000.0 * (Math.random() * 2.0 - 1.0);
+            textObjs[i].position.y += 2.0; //500.0 * Math.sin(sec+i);
+            if (1000.0 < textObjs[i].position.y) {
+                textObjs[i].position.x = 1000.0 * (Math.random() * 2.0 - 1.0);
+                textObjs[i].position.y = -1000.0;
+                textObjs[i].position.z = 1000.0 * (Math.random() * 2.0 - 1.0);
             }
         }
+        // composer.render();
         renderer.render(scene, camera);
     }
     // 初期化のために実行
